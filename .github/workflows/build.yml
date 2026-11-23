@@ -5,22 +5,20 @@ on:
   workflow_dispatch:
 
 jobs:
-  build:
+  build-apk:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - uses: actions/setup-python@v5
+      - name: Compilar APK con Flet
+        id: build
+        uses: flet-dev/flet-build-action@v1
         with:
-          python-version: '3.11'
-      - uses: subosito/flutter-action@v2
-        with:
-          channel: 'stable'
-      - name: Instalar Flet y compilar APK
-        run: |
-          pip install flet
-          flet build apk --project "MiMusica" --description "Descargador de musica"
+          target: apk
+          project-name: MiMusica
+          description: Descargador de musica
       - name: Guardar APK generado
         uses: actions/upload-artifact@v4
         with:
           name: MiMusica-APK
-          path: build/apk/*.apk
+          path: ${{ steps.build.outputs.archive-path }}
+          archive: false
